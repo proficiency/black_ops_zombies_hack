@@ -1,0 +1,43 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Source Files\base">
+      <UniqueIdentifier>{69b92d4a-af8c-4359-a1d4-691ad6777b59}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\hack">
+      <UniqueIdentifier>{743d359f-cef5-46a4-9814-e3ac66cb9d0a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\hooks">
+      <UniqueIdentifier>{b5dfc199-8933-40ef-a6b2-0bf0fbd1d055}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="context.h">
+      <Filter>Source Files\base</Filter>
+    </ClInclude>
+    <ClInclude Include="memory.h">
+      <Filter>Source Files\base</Filter>
+    </ClInclude>
+    <ClInclude Include="math.h">
+      <Filter>Source Files\base</Filter>
+    </ClInclude>
+    <ClInclude Include="sdk.h">
+      <Filter>Source Files\base</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="context.cpp">
+      <Filter>Source Files\base</Filter>
+    </ClCompile>
+    <ClCompile Include="dllmain.cpp">
+      <Filter>Source Files\base</Filter>
+    </ClCompile>
+    <ClCompile Include="create_new_commands.cpp">
+      <Filter>Source Files\hooks</Filter>
+    </ClCompile>
+  </ItemGroup>
+</Project>
