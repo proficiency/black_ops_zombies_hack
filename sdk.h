@@ -356,13 +356,6 @@ public:
 		return this->is_zero( );
 	}
 
-	void set( float X = 0.0f, float Y = 0.0f, float Z = 0.0f )
-	{
-		x = X;
-		y = Y;
-		z = Z;
-	}
-
 	vec3 center( ) const
 	{
 		return *this * 0.5f;
@@ -420,6 +413,11 @@ public:
 				 z > -0.01f && z < 0.01f );
 	}
 
+	void zero( )
+	{
+		x = y = z = 0.0f;
+	}
+
 	bool is_nan( ) const
 	{
 		return isnan( x ) || isnan( y ) || isnan( z );
@@ -442,32 +440,6 @@ public:
 		return vec;
 	}
 
-	void clamp( )
-	{
-		x = std::clamp<float>( x, -89.f, 89.f );
-		y = std::clamp<float>( y, -180.0f, 180.0f );
-		z = 0.0f;
-	}
-
-	vec3 clamped( )
-	{
-		return vec3(
-			std::clamp<float>( x, -89.f, 89.f ),
-			std::clamp<float>( y, -180.0f, 180.0f ),
-			0.0f
-		);
-	}
-	void normalize_in_place( )
-	{
-		vec3& v = *this;
-
-		float iradius = 1.f / ( this->length( ) + FLT_EPSILON );
-
-		v.x *= iradius;
-		v.y *= iradius;
-		v.z *= iradius;
-	}
-
 	bool is_zero( )
 	{
 		return x == 0.0f && y == 0.0f && z == 0.0f;
@@ -477,10 +449,51 @@ public:
 	float x, y, z;
 };
 
+class color_t
+{
+	uint8_t R, G, B, A;
+public:
+	constexpr color_t( ) : R( 0 ), G( 0 ), B( 0 ), A( 0 ) { }
+	constexpr color_t( int r, int g, int b, int a ) : R( r ), G( g ), B( b ), A( a ) { }
+	constexpr color_t( int r, int g, int b ) : R( r ), G( g ), B( b ), A( 255 ) { }
+
+	// for esp
+	static __forceinline color_t team_based( const bool& friendly )
+	{
+		return friendly ? color_t( 0, 100, 255 ) : color_t( 255, 50, 0 );
+	}
+
+	int r( ) const { return R; }
+	int g( ) const { return G; }
+	int b( ) const { return B; }
+	int a( ) const { return A; }
+
+	color_t& operator =( const color_t& c )
+	{
+		R = c.r( );
+		G = c.g( );
+		B = c.b( );
+		A = c.a( );
+		return *this;
+	}
+};
+
 class c_entity
 {
 public:
-	uint8_t pad[796];
+	uint8_t pad[48];
+	vec3 m_origin;
+	uint8_t pad1[84];
+	int m_client_number;
+	uint8_t pad2[154];
+	uint8_t m_ent_type;
+	uint8_t pad3[125];
+	int m_lifestate;
+
+	__forceinline bool alive( )
+	{
+		return m_lifestate & 2;
+	}
 };
 
 class c_weap_def
@@ -490,30 +503,51 @@ class c_weap_def
 
 class c_user_cmd
 {
-	uint8_t pad[52];
+public:
+	int m_server_time;
+	uint32_t m_buttons;
+	uint8_t pad[4];
+	int m_viewangles[3];
+	uint8_t m_weapon;
+	uint8_t pad1[27];
 };
 
 class c_input
 {
 public:
 	c_user_cmd m_cmds[128];
+	int m_cmd_number;
 
 	__forceinline c_user_cmd* get_cmd( const size_t& offset = 0 )
 	{
-		static auto g_cmd_num = memory::pattern_search< int** >( "A1 ? ? ? ? 56 8B 74 24 0C 3B F0", 2 );
-
-		return &m_cmds[( ( **g_cmd_num ) - offset ) & 0x7f];
+		return &m_cmds[( m_cmd_number - offset ) & 0x7f];
 	}
 };
 
 class c_ref_def
 {
+public:
 	uint8_t pad[32];
+
+	// using this is very bad dont do it pls
+	// use viewmatrix->viewposition
 	vec3 m_view_origin;
+};
+
+class c_matrix
+{
+public:
+	vec3 m_recoil;
+	vec3 m_origin;
+	vec3 m_vieworigin;
+	vec3 m_weapon_angles;
+	uint8_t pad[72];
+	vec3 m_viewangles;
 };
 
 class c_cg
 {
+public:
 	// if u ever want/ need it
 	//uint8_t pad[141522];
 	//float   m_time;
@@ -527,5 +561,36 @@ class c_cg
 class c_cg_static
 {
 public:
-	uint8_t pad[409600];
+	uint8_t pad[320];
+	int m_max_clients;
+};
+
+static const char* tag_list[] =
+{
+	"j_head",
+	"j_neck",
+	"j_spineupper",
+	"j_spinelower",
+	"j_elbow_ri",
+	"j_elbow_le",
+	"j_wrist_ri",
+	"j_wrist_le",
+	"j_knee_ri",
+	"j_knee_le",
+	"j_ankle_ri",
+	"j_ankle_le"
+};
+
+enum button_t
+{
+	state_none = 0x0,
+	state_fire = 0x1,
+	state_use = 0x8,
+	state_prone = 0x100,
+	state_crouch = 0x200,
+	state_lethal = 0x4000,
+	state_tactical = 0x8000,
+	state_ads = 0x80800,
+	state_pause = 0x800000,
+	state_melee = 0x4000004,
 };

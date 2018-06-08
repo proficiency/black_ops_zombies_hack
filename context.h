@@ -5,6 +5,7 @@
 #include <intrin.h>
 #include <limits.h>
 #include <algorithm>
+#include <memory>
 #include <d3d9.h>
 #include <d3dx9.h>
 
@@ -25,23 +26,38 @@ if ( jisekoldzgoilkszdegf ) \
 
 #include "memory.h"
 #include "sdk.h"
+#include "math.h"
+#include "aimbot.h"
 
-namespace hack
+#include "renderer.h"
+
+class c_context
 {
-	class c_context
+public:
+	c_entity*     m_local;
+	c_entity*     m_ent_list;
+	c_cg*         m_cg;
+	c_cg_static*  m_cgs;
+	c_input*      m_input;
+	c_user_cmd*   m_cmd;
+	c_matrix*     m_matrix;
+
+	memory::c_hooking m_hooking;
+	std::unique_ptr< c_renderer > m_renderer;
+}; extern c_context ctx;
+
+namespace engine
+{
+	static inline void get_head_pos( c_entity* ent, vec3& out )
 	{
-	public:
-		c_entity*     m_local;
-		c_entity*     m_ent_list;
-		c_cg*         m_cg;
-		c_cg_static*  m_cgs;
-		c_input*      m_input;
-		c_user_cmd*   m_cmd;
+		static const auto 
+			aimtarget_gettagpos = memory::pattern_search< int( __cdecl* )( int client_num, c_entity* ent, uint32_t tag_name, float* out ) >( "66 83 BE ? ? ? ? ? 53 8B 5C 24 0C" );
 
-		memory::c_hooking m_hooking;
-	};
+		static const uint16_t* 
+			j_head = *memory::pattern_search< uint16_t** >( "0F B7 05 ? ? ? ? 57 50", 3 );
 
-	extern void get_context( c_context& );
+		int x = aimtarget_gettagpos( ctx.m_cg->m_client_number, ent, ( int ) *j_head, &out.x );
+
+		printf( "%i %f %f %f\n", x, out.x, out.y, out.z );
+	}
 }
-
-static hack::c_context ctx;

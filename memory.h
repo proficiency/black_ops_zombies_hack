@@ -4,11 +4,9 @@ namespace hooked
 {
 	extern  void  __cdecl    create_new_commands( int a1 );
 	extern  long  __stdcall  present( IDirect3DDevice9*, RECT*, const RECT*, HWND, const RGNDATA* );
-	extern  long  __stdcall  draw_indexed_primitive( LPDIRECT3DDEVICE9, D3DPRIMITIVETYPE, int, uint32_t, uint32_t, uint32_t, uint32_t );
 
 	extern decltype( &create_new_commands )     o_create_new_commands;
 	extern decltype( &present )                 o_present;
-	extern decltype( &draw_indexed_primitive )  o_draw_indexed_primitive;
 }
 
 namespace memory

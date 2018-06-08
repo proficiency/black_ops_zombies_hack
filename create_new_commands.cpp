@@ -4,16 +4,17 @@ decltype( hooked::o_create_new_commands ) hooked::o_create_new_commands;
 
 void __cdecl hooked::create_new_commands( int a1 )
 {
-	hooked::o_create_new_commands( a1 );
+	__asm
+	{
+		mov ecx, a1
+		call [hooked::o_create_new_commands]
+	}
 
-	c_user_cmd* cmd = ctx.m_input->get_cmd( );
+	ctx.m_cmd    = ctx.m_input->get_cmd( );
+	ctx.m_local  = &ctx.m_ent_list[ctx.m_cg->m_client_number];
 
-	if ( !cmd )
+	if ( !ctx.m_cmd || !ctx.m_local )
 		return hooked::o_create_new_commands( a1 );
 
-	ctx.m_cmd   = ctx.m_input->get_cmd( 1 );
-	*ctx.m_cmd  = *cmd;
-	// dec servertime
-
-
+	g_aimbot.init( );
 }
