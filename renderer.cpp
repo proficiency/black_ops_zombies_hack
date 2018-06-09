@@ -1,5 +1,6 @@
 #include "context.h"
 
+// very bad renderer
 c_renderer::c_renderer( IDirect3DDevice9* device )
 {
 	m_device = device;

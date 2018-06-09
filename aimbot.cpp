@@ -17,7 +17,7 @@ void c_aimbot::aimbot( )
 	if ( target_index == 2049 )
 		return;
 
-	m_ent = &ctx.m_ent_list[target_index];
+	m_ent = engine::get_entity( target_index );
 	
 	// lol
 	if ( !m_ent )
@@ -26,7 +26,7 @@ void c_aimbot::aimbot( )
 	vec3 world_pos{};
 	vec3 aim_angle{};
 	engine::get_head_pos( m_ent, world_pos );
-	math::q_vector_angles( world_pos - ctx.m_cg->m_ref_def->m_view_origin, aim_angle );
+	math::q_vector_angles( world_pos - ctx.m_cg->get_ref_def( ).m_view_origin, aim_angle );
 	
 	// angle, not short!!!
 	ctx.m_matrix->m_viewangles += aim_angle;
@@ -51,7 +51,7 @@ int c_aimbot::find_ideal_target( )
 	// might return max players, invalidating our zombies aimbot
 	for ( size_t i = 0; i < ctx.m_cgs->m_max_clients; ++i )
 	{
-		auto ent = &ctx.m_ent_list[i];
+		auto ent = engine::get_entity( i );
 
 		if ( !ent || !ent->alive( ) )
 			continue;

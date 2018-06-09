@@ -34,6 +34,12 @@
     <ClInclude Include="renderer.h">
       <Filter>Source Files\base</Filter>
     </ClInclude>
+    <ClInclude Include="minhook\MinHook.h">
+      <Filter>Source Files\base</Filter>
+    </ClInclude>
+    <ClInclude Include="esp.h">
+      <Filter>Source Files\hack</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="dllmain.cpp">
@@ -48,8 +54,11 @@
     <ClCompile Include="renderer.cpp">
       <Filter>Source Files\base</Filter>
     </ClCompile>
-    <ClCompile Include="present.cpp">
+    <ClCompile Include="end_scene.cpp">
       <Filter>Source Files\hooks</Filter>
+    </ClCompile>
+    <ClCompile Include="esp.cpp">
+      <Filter>Source Files\hack</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

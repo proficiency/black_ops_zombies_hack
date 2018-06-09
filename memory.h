@@ -1,12 +1,13 @@
 #pragma once
+#include "minhook\MinHook.h"
 
 namespace hooked
 {
-	extern  void  __cdecl    create_new_commands( int a1 );
-	extern  long  __stdcall  present( IDirect3DDevice9*, RECT*, const RECT*, HWND, const RGNDATA* );
+	extern  void  __cdecl    create_new_cmds( int a1 );
+	extern  long  __stdcall  end_scene( IDirect3DDevice9* device );
 
-	extern decltype( &create_new_commands )     o_create_new_commands;
-	extern decltype( &present )                 o_present;
+	extern decltype( &create_new_cmds )  o_create_new_cmds;
+	extern decltype( &end_scene )        o_end_scene;
 }
 
 namespace memory
@@ -14,10 +15,25 @@ namespace memory
 	class c_hooking
 	{
 	public:
-		template< typename t >
-		inline t get_function( uintptr_t* address, void* new_function )
+		void start( )
 		{
+			MH_Initialize( );
+		}
 
+		void finish( )
+		{
+			MH_EnableHook( MH_ALL_HOOKS );
+		}
+
+
+		template< typename t >
+		inline t get_function( void* address, void* new_function )
+		{
+			void* original;
+
+			MH_CreateHook( address, new_function, &original );
+
+			return ( t ) original;
 		}
 	};
 

@@ -476,23 +476,67 @@ public:
 		A = c.a( );
 		return *this;
 	}
+
+	color_t operator*( const float& factor ) const
+	{
+		return color_t( static_cast< int >( R * factor ), static_cast< int >( G * factor ), static_cast< int >( B * factor ) );
+	}
 };
 
+enum ent_type_t
+{
+	ent_player = 1,
+	ent_corpse = 2,
+	ent_actor = 16,
+};
 class c_entity
 {
 public:
-	uint8_t pad[48];
+	uint8_t pad[36];
 	vec3 m_origin;
-	uint8_t pad1[84];
-	int m_client_number;
-	uint8_t pad2[154];
+	uint8_t pad1[428];
+	int m_client_number; 
+	uint8_t pad2[66];
 	uint8_t m_ent_type;
-	uint8_t pad3[125];
-	int m_lifestate;
 
 	__forceinline bool alive( )
 	{
-		return m_lifestate & 2;
+		return true;
+	}
+	
+	__forceinline const char* ent_type_name( )
+	{
+		static const char* ent_types[] =
+		{
+			"general",
+			"player",
+			"corpse",
+			"item",
+			"missile",
+			"invisible entity",
+			"scriptmover",
+			"sound blend",
+			"fx",
+			"loop fx",
+			"primary light",
+			"mg42",
+			"plane",
+			"vehicle",
+			"vehicle collmap",
+			"vehicle corpse",
+			"zombie",
+			"zombie spawner",
+			"zombie corpse",
+			"streamer hint",
+		};
+
+		if ( m_ent_type >= 20 )
+		{
+			printf( "ent was an event :( %i\n", m_ent_type );
+			return "event";
+		}
+		
+		return ent_types[m_ent_type];
 	}
 };
 
@@ -527,11 +571,24 @@ public:
 class c_ref_def
 {
 public:
-	uint8_t pad[32];
+	int m_x;
+	int m_y;
+	int m_w;
+	int m_h;
+
+	// fov in radians, i think it's 80 standard, havent checked
+	vec2 m_fov;
+	uint8_t pad[8];
 
 	// using this is very bad dont do it pls
 	// use viewmatrix->viewposition
 	vec3 m_view_origin;
+
+	uint8_t pad1[8];
+	
+	// sorry
+	vec3 m_viewaxis[3];
+	uint8_t pad2[28];
 };
 
 class c_matrix
@@ -548,21 +605,44 @@ public:
 class c_cg
 {
 public:
-	// if u ever want/ need it
-	//uint8_t pad[141522];
-	//float   m_time;
-	uint8_t pad[211280];
 	int m_client_number;
-	// i really hope i counted right
-	uint8_t pad1[362412];
-	c_ref_def* m_ref_def;
+
+	// problem:
+	// refdef becomes invalid
+	// once in game, the complete opposite
+	// of other cod games i've hacked
+	c_ref_def get_ref_def( )
+	{
+		static  c_ref_def  valid_refdef;
+		const   c_ref_def  refdef = *reinterpret_cast< c_ref_def* >( ( uintptr_t ) this + 573696 );
+
+		if ( refdef.m_w > 0 && refdef.m_h > 0 )
+			valid_refdef = refdef;
+
+		//printf( "refdef: %i %i %f %f\n", refdef.m_w, refdef.m_h, refdef.m_fov.x, refdef.m_fov.y );
+		//printf( "valid:  %i %i %f %f\n", valid_refdef.m_w, valid_refdef.m_h, valid_refdef.m_fov.x, valid_refdef.m_fov.y );
+		
+		// ill figure it out later
+		return *reinterpret_cast< c_ref_def* >( ( uintptr_t ) this + 573696 );
+	}
 };
 
 class c_cg_static
 {
 public:
-	uint8_t pad[320];
+	int m_x;
+	int m_y;
+	int m_w;
+	int m_h;
+	uint8_t pad[304];
 	int m_max_clients;
+};
+
+class c_client_info
+{
+public:
+	uint8_t pad[28];
+	char m_name[32];
 };
 
 static const char* tag_list[] =
