@@ -613,16 +613,18 @@ public:
 	// of other cod games i've hacked
 	c_ref_def get_ref_def( )
 	{
+
 		static  c_ref_def  valid_refdef;
 		const   c_ref_def  refdef = *reinterpret_cast< c_ref_def* >( ( uintptr_t ) this + 573696 );
 
 		if ( refdef.m_w > 0 && refdef.m_h > 0 )
 			valid_refdef = refdef;
 
-		//printf( "refdef: %i %i %f %f\n", refdef.m_w, refdef.m_h, refdef.m_fov.x, refdef.m_fov.y );
-		//printf( "valid:  %i %i %f %f\n", valid_refdef.m_w, valid_refdef.m_h, valid_refdef.m_fov.x, valid_refdef.m_fov.y );
+		printf( "refdef: %i %i %f %f\n", refdef.m_w, refdef.m_h, refdef.m_fov.x, refdef.m_fov.y );
+		printf( "valid:  %i %i %f %f\n", valid_refdef.m_w, valid_refdef.m_h, valid_refdef.m_fov.x, valid_refdef.m_fov.y );
 		
 		// ill figure it out later
+		return valid_refdef;
 		return *reinterpret_cast< c_ref_def* >( ( uintptr_t ) this + 573696 );
 	}
 };

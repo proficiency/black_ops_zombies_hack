@@ -44,7 +44,7 @@ namespace memory
 		const  char*       pattern,
 
 		// offset in bytes from address obtained by pattern searching
-		const  size_t&     offset = 0,
+		const  int&     offset = 0,
 
 		// module to search within, pretty much never use anything else
 		const  module_t    module = GetModuleHandle( 0 ),

@@ -11,6 +11,8 @@ long __stdcall hooked::end_scene( IDirect3DDevice9* device )
 	{
 		if ( engine::in_game( ) )
 			g_esp.init( );
+		else
+			ctx.m_cg->get_ref_def( );
 
 		ctx.m_renderer->string( color_t( 255, 255, 255 ), 10.0f, 10.0f, false, "client: %i\nmax clients: %i\nin game: %i\n",
 								ctx.m_cg->m_client_number, ctx.m_cgs->m_max_clients, engine::in_game( ) );

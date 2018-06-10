@@ -5,7 +5,7 @@ c_context ctx;
 void hack( )
 {
 	ctx.m_ent_list  = *memory::pattern_search< c_entity** >( "8B 04 9D ? ? ? ? 03 C1", 3 );
-	ctx.m_cg        = **memory::pattern_search< c_cg*** >( "8B 35 ? ? ? ? 89 44 24 08 F3 0F 10 86", 2 );
+	ctx.m_cg        = **memory::pattern_search< c_cg*** >( "8B 3D ? ? ? ? 7C 16", 2 );
 	ctx.m_cgs       = **memory::pattern_search< c_cg_static*** >( "8B 0D ? ? ? ? D9 40 0C", 2 );
 	ctx.m_input     = *memory::pattern_search< c_input** >( "68 ? ? ? ? E8 ? ? ? ? 53 E8", 1  );
 	ctx.m_matrix    = *memory::pattern_search< c_matrix** >( "B8 ? ? ? ? 8D 49 00 F3 0F 10 48", 1 );
@@ -28,7 +28,7 @@ bool __stdcall DllMain( HINSTANCE instance, ulong_t reason, void* reserved )
 	{
 		DisableThreadLibraryCalls( instance );
 
-		if ( AllocConsole( ) )
+		/*if ( AllocConsole( ) )
 		{
 			HWND  con_hwndw{ GetConsoleWindow( ) };
 			RECT  con_bound{ 904 + 219, 420 };
@@ -46,7 +46,7 @@ bool __stdcall DllMain( HINSTANCE instance, ulong_t reason, void* reserved )
 			SetConsoleTextAttribute( GetStdHandle( STD_OUTPUT_HANDLE ), FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_INTENSITY );
 
 			freopen( "CONOUT$", "w", stdout );
-		}
+		}*/
 
 		CreateThread( 0, 0, LPTHREAD_START_ROUTINE( hack ), 0, 0, 0 );
 

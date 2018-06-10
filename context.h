@@ -58,12 +58,12 @@ namespace engine
 	static inline void get_head_pos( c_entity* ent, vec3& out )
 	{
 		static const auto 
-			aimtarget_gettagpos = memory::pattern_search< int( __cdecl* )( int client_num, c_entity* ent, uint32_t tag_name, float* out ) >( "53 8B 5C 24 0C 0F 85", -0x8 );
+			aimtarget_gettagpos = memory::pattern_search< int( __cdecl* )( c_entity* ent, uint16_t tag_name, float* out ) >( "0F B6 46 04 8B 8E ? ? ? ? 53" );
 
 		static const uint16_t* 
 			j_head = *memory::pattern_search< uint16_t** >( "0F B7 05 ? ? ? ? 57 50", 3 );
 
-		aimtarget_gettagpos( ctx.m_cg->m_client_number, ent, ( int ) *j_head, &out.x );
+		aimtarget_gettagpos( ent, *j_head, &out.x );
 	}
 
 	static inline int connection_state( )
@@ -86,23 +86,9 @@ namespace engine
 
 	static inline bool w2s( const vec3& world, vec3& screen )
 	{
-		const vec2 center( static_cast< float >( ctx.m_cg->get_ref_def( ).m_w / 2 ), static_cast< float >( ctx.m_cg->get_ref_def( ).m_h / 2 ) );
+		// dont even get me started
+		static auto worldpos_to_screenpos = memory::pattern_search< bool( __cdecl* )( int local_client_num, const float* world_pos, float* out_pos ) >( "8B 4C 24 04 A1 ? ? ? ? F3 0F 10 98 ? ? ? ? F3 0F 10 80 ? ? ? ? F3 0F 10 88 ? ? ? ? 05 ? ? ? ? 8B D1 C1 E2 04 2B D1 8D 0C D5 ? ? ? ? 8B 54 24 08 F3 0F 10 62 ? F3 0F 5C 60" );
 
-		vec3 dir, transform;
-		vec3 forward = ctx.m_cg->get_ref_def( ).m_viewaxis[0], right = ctx.m_cg->get_ref_def( ).m_viewaxis[1], up = ctx.m_cg->get_ref_def( ).m_viewaxis[2];
-
-		dir = world - ctx.m_cg->get_ref_def( ).m_view_origin;
-
-		transform.x = DotProduct( dir, right );
-		transform.y = DotProduct( dir, up );
-		transform.z = DotProduct( dir, forward );
-
-		if ( transform.z < 0.1f )
-			return false;
-
-		screen.x = center.x * ( 1.0f - ( transform.x / ctx.m_cg->get_ref_def( ).m_fov.x / transform.z ) );
-		screen.y = center.y * ( 1.0f - ( transform.y / ctx.m_cg->get_ref_def( ).m_fov.y / transform.z ) );
-
-		return true;
+		return worldpos_to_screenpos( ctx.m_cg->m_client_number, &world.x, &screen.x );
 	}
 }
